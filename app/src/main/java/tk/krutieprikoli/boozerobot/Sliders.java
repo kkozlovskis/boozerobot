@@ -6,26 +6,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
 public class Sliders extends AppCompatActivity {
 
     TextView alcoholBarView;
     TextView sodaBarView;
-    private static final String TAG = "TEST ";
     private static final int maxPercentage = 100;
 
     @Override
@@ -51,6 +47,20 @@ public class Sliders extends AppCompatActivity {
         int sodaBarPercentage = sodaBar.getProgress();
         sodaBarView = findViewById(R.id.sodaTextView);
         sodaBarView.setText("Soda percentage: " + sodaBarPercentage);
+
+        Button submitBtn = findViewById(R.id.submit);
+        submitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText clientName = findViewById(R.id.clientsName);
+                if (clientName.getText().toString().length() < 1) {
+                    // Display toast
+                    Toast.makeText(getApplicationContext(), "Please enter nickname!", Toast.LENGTH_LONG).show();
+                } else {
+                    submitData(view);
+                }
+            }
+        });
     }
 
     SeekBar.OnSeekBarChangeListener seekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
@@ -77,16 +87,14 @@ public class Sliders extends AppCompatActivity {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-            // called when the user first touches the SeekBar
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-            // called after the user finishes moving the SeekBar
         }
     };
 
-    public void submitClicked(View view) {
+    public void submitData(View view) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -112,7 +120,6 @@ public class Sliders extends AppCompatActivity {
 
                     Log.i("JSON", jsonParam.toString());
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-//            os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
                     os.writeBytes(jsonParam.toString());
 
                     os.flush();
